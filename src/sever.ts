@@ -1,30 +1,31 @@
-import express,{Request,Response} from "express";
-import dotenv from "dotenv";
+import express, { Request, Response } from "express";
 import cors from "cors";
-import connectDB from "./database";
+import userRoute from "./routes/userRoute"
 
-dotenv.config();
 
-connectDB();
 
 const app = express();
+
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-app.get("/api/v1/", (req:Request, res:Response) => {
+app.get("/api/v1/", (req: Request, res: Response) => {
   res.send("API on");
 });
 
-// app.use("/", (req, res, next) => {
-//   res.send("Fuck you");
-// });
+//get user
+app.use("/api/v1/user", userRoute);
 
-app.use("*", (req, res) => {
-  res.status(404).json({ error: "not found" });
+
+app.use((req, res, next) => {
+  // res.send("Fuck you");
+  res.status(404).json({ error: `${req.method} Route ${req.path} not found` });
 });
 
+// app.use("/*", (req, res) => {
+//   res.status(404).json({ error: "not found" });
+// });
 
 export default app;
