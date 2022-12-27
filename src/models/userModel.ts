@@ -16,6 +16,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      required: true,
+      default: "user",
+    },
     profile_picture: {
       type: String,
       default: "https://i.ibb.co/gWjhxPq/defaultavatar.png",
@@ -30,10 +36,10 @@ const UserSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-    },  
+    },
     jwtToken: {
       type: String,
-    }
+    },
   },
   {
     versionKey: false,

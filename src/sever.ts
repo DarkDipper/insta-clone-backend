@@ -1,11 +1,8 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import userRoute from "./routes/userRoute"
-
-
+import userRoute from "./routes/userRoute";
 
 const app = express();
-
 
 app.use(cors());
 app.use(express.json());
@@ -17,7 +14,6 @@ app.get("/api/v1/", (req: Request, res: Response) => {
 
 //get user
 app.use("/api/v1/user", userRoute);
-
 
 app.use((req, res, next) => {
   // res.send("Fuck you");

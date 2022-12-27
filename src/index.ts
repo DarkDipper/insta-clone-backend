@@ -2,11 +2,10 @@ import dotenv from "dotenv";
 import app from "./sever";
 import connectDB from "./database/database";
 import Logging from "./library/Logging";
-
 // load env variables
 dotenv.config();
 
-const port = process.env.PORT || 5050;
+const port = process.env.PORT;
 
 
 // connect to database before start server

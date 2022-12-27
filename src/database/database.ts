@@ -4,7 +4,7 @@ import Logging from "../library/Logging";
 
 dotenv.config();
 
-const DB_URI = process.env.DB_URI || "";
+const DB_URI = process.env.DB_URI;
 // connect to user collection in database
 
 
@@ -13,7 +13,7 @@ export default async function connectDB() {
     if (DB_URI === "") {
       throw new Error("Database URI not found");
     }
-    const con = await mongoose.connect(DB_URI, {
+    await mongoose.connect(DB_URI, {
       maxPoolSize: 50,
       writeConcern: {
         wtimeout: 2500,
