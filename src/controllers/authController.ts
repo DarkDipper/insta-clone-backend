@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
+import cookie from "cookie";
 import userModel from "../models/userModel";
 import { generateToken } from "../utils/generateToken";
 import { registerVerify } from "../utils/verify";
@@ -7,6 +8,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Send back status
 async function register(req: Request, res: Response) {
   try {
     const { username, password, email } = req.body;
@@ -38,6 +40,8 @@ async function register(req: Request, res: Response) {
   }
 }
 
+// Send back token (Not use anymore)
+// Setting token cookie
 async function login(req: Request, res: Response) {
   try {
     const { username, password } = req.body;
@@ -62,6 +66,27 @@ async function login(req: Request, res: Response) {
     await userModel.findByIdAndUpdate(user._id, {
       jwtToken: token,
     });
+    // res.setHeader(
+    //   "Set-Cookie",
+    //   cookie.serialize("userAuth", token, {
+    //     httpOnly: true,
+    //     secure: false,
+    //     maxAge: 60 * 60,
+    //     sameSite: "strict",
+    //     path: "/",
+    //   })
+    // );
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("token", "ABCD", {
+        httpOnly: true,
+        secure: false,
+        maxAge: 60 * 60,
+        sameSite: "lax",
+        path: "/",
+      })
+    );
+    // res.cookie("userAuth", token);
     res.status(200).send({
       status: "Success",
       message: "Login successfully",

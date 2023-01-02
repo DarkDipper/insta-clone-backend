@@ -4,9 +4,10 @@ import Logging from "../library/Logging";
 
 dotenv.config();
 
+mongoose.set("strictQuery", true);
+
 const DB_URI = process.env.DB_URI;
 // connect to user collection in database
-
 
 export default async function connectDB() {
   try {
