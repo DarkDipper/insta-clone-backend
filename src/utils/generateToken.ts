@@ -7,8 +7,8 @@ type User = {
 };
 
 function generateToken(user: User, secretKey: string) {
-const userToken = jwt.sign(user, secretKey);
+  const userToken = jwt.sign(user, secretKey);
   return userToken;
 }
 
-export { generateToken };
+export { generateToken, User };

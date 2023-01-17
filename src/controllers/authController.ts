@@ -1,15 +1,15 @@
 import bcrypt from "bcrypt";
-import { Request, Response } from "express";
-import cookie from "cookie";
+import { Response, NextFunction } from "express";
 import userModel from "../models/userModel";
 import { generateToken } from "../utils/generateToken";
 import { registerVerify } from "../utils/verify";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
-
+import { CustomRequest } from "../utils/interface";
 dotenv.config();
 
 // Send back status
-async function register(req: Request, res: Response) {
+async function register(req: CustomRequest, res: Response) {
   try {
     const { username, password, email } = req.body;
     const verify = await registerVerify(username, email);
@@ -40,9 +40,8 @@ async function register(req: Request, res: Response) {
   }
 }
 
-// Send back token (Not use anymore)
-// Setting token cookie
-async function login(req: Request, res: Response) {
+// Send back token
+async function login(req: CustomRequest, res: Response) {
   try {
     const { username, password } = req.body;
     const user = await userModel.findOne({ user_name: username });
@@ -66,27 +65,6 @@ async function login(req: Request, res: Response) {
     await userModel.findByIdAndUpdate(user._id, {
       jwtToken: token,
     });
-    // res.setHeader(
-    //   "Set-Cookie",
-    //   cookie.serialize("userAuth", token, {
-    //     httpOnly: true,
-    //     secure: false,
-    //     maxAge: 60 * 60,
-    //     sameSite: "strict",
-    //     path: "/",
-    //   })
-    // );
-    res.setHeader(
-      "Set-Cookie",
-      cookie.serialize("token", "ABCD", {
-        httpOnly: true,
-        secure: false,
-        maxAge: 60 * 60,
-        sameSite: "lax",
-        path: "/",
-      })
-    );
-    // res.cookie("userAuth", token);
     res.status(200).send({
       status: "Success",
       message: "Login successfully",
@@ -101,4 +79,32 @@ async function login(req: Request, res: Response) {
   }
 }
 
-export default { register, login };
+// Verify token
+async function verify(req: CustomRequest, res: Response, next: NextFunction) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || authHeader === undefined) {
+      res.status(403).json("You are not authorized");
+    } else {
+      const token = authHeader.split(" ")[1];
+      if (authHeader) {
+        jwt.verify(token, process.env.SECRET_KEY_TOKEN, (err, user) => {
+          if (err) {
+            throw new Error("token is not valid!");
+          }
+          req.user = user;
+          next();
+        });
+      }
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
+  }
+}
+
+export default { register, login, verify };
