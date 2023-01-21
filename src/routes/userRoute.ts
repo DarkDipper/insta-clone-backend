@@ -13,8 +13,8 @@ import authController from "../controllers/authController";
   searchUser
 */
 
-const router = express.Router();
-router.post("/register", authController.register);
-router.post("/login", authController.login);
+const userRoute = express.Router();
+userRoute.post("/register", authController.register);
+userRoute.post("/login", authController.login);
 
-export = router;
+export default userRoute;

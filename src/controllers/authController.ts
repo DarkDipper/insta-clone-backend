@@ -72,9 +72,9 @@ async function login(req: CustomRequest, res: Response) {
     });
   } catch (e) {
     if (e instanceof Error) {
-      res.status(500).send({ stauts: "Failure", message: e.message });
+      res.status(500).send({ status: "Failure", message: e.message });
     } else {
-      res.status(500).send({ stauts: "Failure", message: "Error unknow" });
+      res.status(500).send({ status: "Failure", message: "Error unknow" });
     }
   }
 }

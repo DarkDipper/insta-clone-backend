@@ -1,0 +1,5 @@
+- [ ] User Apis
+  - [x] Register API -> Status
+  - [x] Login API -> jwtToken -> SessionStorage
+- [ ] Post Apis
+  - [x] Create Post API

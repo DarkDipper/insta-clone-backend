@@ -1,28 +1,23 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import postRoute from "./routes/postRoute";
 import userRoute from "./routes/userRoute";
-
 const app = express();
 
 app.use(cors());
 // app.use(cors({ origin: "http://localhost:3000", credentials: true }))
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 app.get("/api/v1/", (req: Request, res: Response) => {
   res.send("API on");
 });
 
-//get user
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/post", postRoute);
 
-app.use((req, res, next) => {
-  // res.send("Fuck you");
+app.use((req, res) => {
   res.status(404).json({ error: `${req.method} Route ${req.path} not found` });
 });
-
-// app.use("/*", (req, res) => {
-//   res.status(404).json({ error: "not found" });
-// });
 
 export default app;

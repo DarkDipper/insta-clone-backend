@@ -1,30 +1,50 @@
+import { Response } from "express";
 import Post from "../Models/postModel";
-import User from "../Models/userModel";
+import userModel from "../models/userModel";
 import Comment from "../Models/commentModel";
+import { CustomRequest } from "../utils/interface";
+import { JwtPayload } from "jsonwebtoken";
 
-const createPost = async (req, res) => {
-  req.body.user = req.user._id;
-  const newPost = new Post(req.body);
-  try {
-    await newPost.save();
-    res.status(200).send({
-      status: "success",
-      message: "post has been created",
+const createPost = async (req: CustomRequest, res: Response) => {
+  if (req.user !== undefined) {
+    const { _id } = req.user as JwtPayload;
+    const newPost = new Post({
+      user: _id,
+      description: req.body.desc,
+      imgbburl: req.listDataImgBB,
     });
-  } catch (e) {
+    try {
+      await newPost.save();
+      res.status(200).send({
+        status: "success",
+        message: "post has been created",
+      });
+    } catch (e) {
+      if (e instanceof Error) {
+        res.status(500).send({
+          status: "failure",
+          message: e.message,
+        });
+      }
+    }
+  } else {
     res.status(500).send({
       status: "failure",
-      message: e.message,
+      message: "Create a pose have been failed",
     });
   }
 };
-const updatePost = async (req, res) => {
+const updatePost = async (req: CustomRequest, res: Response) => {
   try {
+    if (req.user === undefined) {
+      throw new Error("User is undefined");
+    }
+    const { _id } = req.user as JwtPayload;
     const post = await Post.findById(req.params.id);
     if (post === null || post.user === undefined) {
       throw Error("Post is null or user is undefined");
     } else {
-      if (req.user._id === post.user.toString()) {
+      if (_id === post.user.toString()) {
         await Post.updateOne({ $set: req.body });
         res.status(200).send({
           status: "success",
@@ -38,20 +58,26 @@ const updatePost = async (req, res) => {
       }
     }
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 };
-const deletePost = async (req, res) => {
+const deletePost = async (req: CustomRequest, res: Response) => {
   try {
+    if (req.user === undefined) {
+      throw new Error("User is undefined");
+    }
+    const { _id, role } = req.user as JwtPayload;
     const post = await Post.findById(req.params.id);
     if (post === null || post.user === undefined) {
       throw Error("Post is null or user is undefined");
     } else {
-      if (req.user._id === post.user.toString() || req.user.role === "admin") {
-        await Comment.deleteMany({ user: req.user._id });
+      if (_id === post.user.toString() || role === "admin") {
+        await Comment.deleteMany({ user: _id });
         await Post.findByIdAndDelete(req.params.id);
         res.status(200).send({
           status: "success",
@@ -65,18 +91,27 @@ const deletePost = async (req, res) => {
       }
     }
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 };
-const getTimeline = async (req, res) => {
+const getTimeline = async (req: CustomRequest, res: Response) => {
   try {
-    const userid = req.user._id;
+    if (req.user === undefined) {
+      throw new Error("User is undefined");
+    }
+    if (!req.query.page || !req.query.limit) {
+      throw new Error("Query not valid");
+    }
+    const { _id } = req.user as JwtPayload;
+    const userid = _id;
     const page = parseInt(req.query.page) - 1 || 0;
     const limit = parseInt(req.query.limit) || 3;
-    const user = await User.findById(userid).select("followings");
+    const user = await userModel.findById(userid).select("followings");
     if (user === null) {
       throw Error("User is null");
     } else {
@@ -107,15 +142,20 @@ const getTimeline = async (req, res) => {
       });
     }
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 };
-const getPostsUser = async (req, res) => {
+const getPostsUser = async (req: CustomRequest, res: Response) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
+    if (req.user === undefined) {
+      throw new Error("User is undefined");
+    }
+    const user = await userModel.findOne({ username: req.params.username });
     if (user === null) {
       throw Error("User is null");
     } else {
@@ -123,37 +163,48 @@ const getPostsUser = async (req, res) => {
       res.status(200).json(posts);
     }
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 };
-const getPost = async (req, res) => {
+const getPost = async (req: CustomRequest, res: Response) => {
   try {
+    if (req.user === undefined) {
+      throw new Error("User is undefined");
+    }
     const post = await Post.findOne({ _id: req.params.id }).populate("comment");
     res.status(200).json(post);
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 };
-const likeUnlike = async (req, res) => {
+const likeUnlike = async (req: CustomRequest, res: Response) => {
   try {
+    if (req.user === undefined) {
+      throw new Error("User is undefined");
+    }
+    const { _id } = req.user as JwtPayload;
     const post = await Post.findById(req.params.id);
     if (post === null) {
       throw Error("Post is null");
     } else {
-      if (!post.likes.includes(req.user._id)) {
-        await post.updateOne({ $push: { likes: req.user._id } });
+      if (!post.likes.includes(_id)) {
+        await post.updateOne({ $push: { likes: _id } });
         res.status(200).send({
           status: "success",
           message: "the post has been liked",
         });
       } else {
-        await post.updateOne({ $pull: { likes: req.user._id } });
+        await post.updateOne({ $pull: { likes: _id } });
         res.status(200).send({
           status: "success",
           message: "the post has been disliked",
@@ -161,10 +212,12 @@ const likeUnlike = async (req, res) => {
       }
     }
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 };
 export default {
