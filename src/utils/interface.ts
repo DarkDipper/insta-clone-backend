@@ -6,6 +6,8 @@ interface CustomRequest extends Request {
   query: {
     page?: string;
     limit?: string;
+    qlimit?: string;
+    search?: string;
   };
 }
 export { CustomRequest };

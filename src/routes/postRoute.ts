@@ -9,5 +9,6 @@ postRoute.post(
   UploadImage.UploadImage,
   postController.createPost
 );
+postRoute.get("/timeline", authController.verify, postController.getTimeline);
 
 export default postRoute;
