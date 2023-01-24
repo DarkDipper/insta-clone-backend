@@ -1,8 +1,9 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction, Express } from "express";
 import axios from "axios";
 import { CustomRequest } from "./interface";
 import dotenv from "dotenv";
 import FormData = require("form-data");
+// import {m}
 
 dotenv.config();
 
@@ -12,15 +13,15 @@ async function UploadImage(
   next: NextFunction
 ) {
   try {
-    const { listImage } = req.body;
+    // const { desc } = req.body;
+    const files = req.files as Express.Multer.File[];
     const listImgBBUrl: string[] = [];
-    if (!listImage) {
+    if (!files) {
       throw new Error("List image empty");
     }
-    // console.log(listImage);
-    for (let i = 0; i < listImage.length; i++) {
+    for (let i = 0; i < files.length; i++) {
       let bodyFormData = new FormData();
-      bodyFormData.append("image", listImage[i]);
+      bodyFormData.append("image", files[i].buffer.toString("base64"));
       const imgbb_res = await axios
         .post(
           `https://api.imgbb.com/1/upload?key=${process.env.API_KEY_IMGBB}`,
