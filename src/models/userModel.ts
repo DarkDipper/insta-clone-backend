@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema(
     },
     profile_picture: {
       type: String,
-      default: "https://i.ibb.co/gWjhxPq/defaultavatar.png",
+      default: "https://i.imgur.com/uITbeDy.png",
     },
     followers: {
       type: Array,
@@ -46,4 +46,4 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("User", UserSchema,"users");
+export default mongoose.model("User", UserSchema, "users");

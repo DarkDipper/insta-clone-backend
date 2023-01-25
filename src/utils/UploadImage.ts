@@ -15,25 +15,28 @@ async function UploadImage(
   try {
     // const { desc } = req.body;
     const files = req.files as Express.Multer.File[];
-    const listImgBBUrl: string[] = [];
+    const listImgUrl: string[] = [];
     if (!files) {
       throw new Error("List image empty");
     }
     for (let i = 0; i < files.length; i++) {
       let bodyFormData = new FormData();
       bodyFormData.append("image", files[i].buffer.toString("base64"));
-      const imgbb_res = await axios
-        .post(
-          `https://api.imgbb.com/1/upload?key=${process.env.API_KEY_IMGBB}`,
-          bodyFormData
-        )
+      const imgur_res = await axios
+        .post(`https://api.imgur.com/3/image/`, bodyFormData, {
+          headers: {
+            Authorization: `Client-ID ${process.env.CLIENT_ID_IMGUR}`,
+            ...bodyFormData.getHeaders(),
+          },
+        })
         .catch((e) => {
-          // res.status(500).send(e);
           throw Error("Can't upload image");
         });
-      listImgBBUrl.push(imgbb_res.data.data.url);
+      // console.log(imgur_res.data.data.link);
+      listImgUrl.push(imgur_res.data.data.link);
     }
-    req.listDataImgBB = listImgBBUrl;
+    // console.log(listImgUrl);
+    req.listDataImg = listImgUrl;
     next();
   } catch (e) {
     if (e instanceof Error) {

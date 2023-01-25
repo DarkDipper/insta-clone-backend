@@ -11,7 +11,7 @@ const createPost = async (req: CustomRequest, res: Response) => {
     const newPost = new postModel({
       user: _id,
       description: req.body.desc,
-      imgbburl: req.listDataImgBB,
+      imgurl: req.listDataImg,
     });
     try {
       await newPost.save();
