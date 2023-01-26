@@ -3,6 +3,8 @@ import axios from "axios";
 import { CustomRequest } from "./interface";
 import dotenv from "dotenv";
 import FormData = require("form-data");
+import { encode } from "blurhash";
+import sharp from "sharp";
 // import {m}
 
 dotenv.config();
@@ -15,27 +17,54 @@ async function UploadImage(
   try {
     // const { desc } = req.body;
     const files = req.files as Express.Multer.File[];
-    const listImgUrl: string[] = [];
+    const listImgUrl: {
+      srcURL: string;
+      width: number;
+      height: number;
+      blurHash: string;
+    }[] = [];
     if (!files) {
       throw new Error("List image empty");
     }
     for (let i = 0; i < files.length; i++) {
+      let tempImg: {
+        srcURL: string;
+        width: number;
+        height: number;
+        blurHash: string;
+      };
+      const { data } = await sharp(files[i].buffer)
+        .ensureAlpha()
+        .raw()
+        .toBuffer({
+          resolveWithObject: true,
+        });
       let bodyFormData = new FormData();
       bodyFormData.append("image", files[i].buffer.toString("base64"));
       const imgur_res = await axios
-        .post(`https://api.imgur.com/3/image/`, bodyFormData, {
+        .post(`https://api.imgur.com/3/upload/`, bodyFormData, {
           headers: {
-            Authorization: `Client-ID ${process.env.CLIENT_ID_IMGUR}`,
-            ...bodyFormData.getHeaders(),
+            // Authorization: `Client-ID ${process.env.CLIENT_ID_IMGUR}`,
+            Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
           },
         })
         .catch((e) => {
           throw Error("Can't upload image");
         });
-      // console.log(imgur_res.data.data.link);
-      listImgUrl.push(imgur_res.data.data.link);
+      const encodeHash = encode(
+        new Uint8ClampedArray(data),
+        imgur_res.data.data.width,
+        imgur_res.data.data.height,
+        4,
+        4
+      );
+      listImgUrl.push({
+        srcURL: imgur_res.data.data.link,
+        width: imgur_res.data.data.width,
+        height: imgur_res.data.data.height,
+        blurHash: encodeHash,
+      });
     }
-    // console.log(listImgUrl);
     req.listDataImg = listImgUrl;
     next();
   } catch (e) {

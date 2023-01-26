@@ -1,17 +1,30 @@
 import { Response } from "express";
+import { Types } from "mongoose";
 import postModel from "../Models/postModel";
 import userModel from "../models/userModel";
+import imageModel from "../models/imageModel";
 import Comment from "../Models/commentModel";
 import { CustomRequest } from "../utils/interface";
 import { JwtPayload } from "jsonwebtoken";
 
 const createPost = async (req: CustomRequest, res: Response) => {
-  if (req.user !== undefined) {
-    const { _id } = req.user as JwtPayload;
+  if (req.user !== undefined && req.listDataImg) {
+    const { _id: userID } = req.user as JwtPayload;
+    const listImage: Types.ObjectId[] = [];
+    for (const img of req.listDataImg) {
+      const newImage = new imageModel({
+        path: img.srcURL,
+        width: img.width,
+        height: img.height,
+        blurHash: img.blurHash,
+      });
+      const { _id: imageID } = await newImage.save();
+      listImage.push(imageID);
+    }
     const newPost = new postModel({
-      user: _id,
+      user: userID,
       description: req.body.desc,
-      imgurl: req.listDataImg,
+      list_image: listImage,
     });
     try {
       await newPost.save();
@@ -107,22 +120,20 @@ const getTimeline = async (req: CustomRequest, res: Response) => {
     if (!req.query.page || !req.query.limit) {
       throw new Error("Query not valid");
     }
-    const { _id } = req.user as JwtPayload;
-    const userid = _id;
+    const { _id: userID } = req.user as JwtPayload;
     const page = parseInt(req.query.page) - 1 || 0;
     const limit = parseInt(req.query.limit) || 3;
-    const userFollowing = await userModel.findById(userid).select("following");
+    const userFollowing = await userModel.findById(userID).select("following");
     if (userFollowing === null) {
       throw Error("User is null");
     } else {
-      // res.status(200).send({ user });
-
       const myPosts = await postModel
-        .find({ user: userid })
+        .find({ user: userID })
         .skip(page * limit)
-        .limit(3)
+        // .limit(3)
         .sort({ createdAt: "desc" })
-        .populate("user", "username profilePicture");
+        .populate("user", "user_name profile_picture")
+        .populate("list_image");
       const followingsPosts = await Promise.all(
         userFollowing.following.map((followingId) => {
           return postModel
@@ -142,6 +153,7 @@ const getTimeline = async (req: CustomRequest, res: Response) => {
       res.status(200).send({
         status: "success",
         Posts: arr,
+        length: arr.length,
         limit: limit,
       });
     }
