@@ -79,6 +79,33 @@ async function login(req: CustomRequest, res: Response) {
   }
 }
 
+// Auth cookie
+async function auth(req: CustomRequest, res: Response, next: NextFunction) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || authHeader === undefined) {
+      res.status(403).json("You are not authorized");
+    } else {
+      const token = authHeader.split(" ")[1];
+      if (authHeader) {
+        jwt.verify(token, process.env.SECRET_KEY_TOKEN, (err, user) => {
+          if (err) {
+            throw new Error("token is not valid!");
+          }
+          res.status(200).send({ status: true, user: user });
+        });
+      }
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: false,
+        message: e.message,
+      });
+    }
+  }
+}
+
 // Verify token
 async function verify(req: CustomRequest, res: Response, next: NextFunction) {
   try {
@@ -100,11 +127,11 @@ async function verify(req: CustomRequest, res: Response, next: NextFunction) {
   } catch (e) {
     if (e instanceof Error) {
       res.status(500).send({
-        status: "failure",
+        status: false,
         message: e.message,
       });
     }
   }
 }
 
-export default { register, login, verify };
+export default { register, login, verify, auth };
