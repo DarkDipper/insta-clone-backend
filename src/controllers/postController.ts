@@ -146,7 +146,8 @@ const getTimeline = async (req: CustomRequest, res: Response) => {
             .skip(page * 3)
             .limit(3)
             .sort({ createdAt: "desc" })
-            .populate("user", "username profilePicture");
+            .populate("user", "user_name profile_picture")
+            .populate("list_image");
         })
       );
       const arr = myPosts.concat(...followingsPosts);
@@ -168,20 +169,23 @@ const getTimeline = async (req: CustomRequest, res: Response) => {
 };
 const getPostsUser = async (req: CustomRequest, res: Response) => {
   try {
-    if (req.user === undefined) {
-      throw new Error("User is undefined");
-    }
     const user = await userModel.findOne({ username: req.params.username });
     if (user === null) {
       throw Error("User is null");
     } else {
-      const posts = await postModel.find({ user: user._id });
-      res.status(200).json(posts);
+      const posts = await postModel
+        .find({ user: user._id })
+        .sort({ createdAt: "desc" })
+        .populate("user", "user_name profile_picture")
+        .populate("list_image");
+      res
+        .status(200)
+        .json({ status: false, posts: posts, length: posts.length });
     }
   } catch (e) {
     if (e instanceof Error) {
       res.status(500).send({
-        status: "failure",
+        status: false,
         message: e.message,
       });
     }

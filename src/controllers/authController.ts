@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { Response, NextFunction } from "express";
 import userModel from "../models/userModel";
 import { generateToken } from "../utils/generateToken";
-import { registerVerify } from "../utils/verify";
+import { registerVerify } from "../utils/verifyRegister";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { CustomRequest } from "../utils/interface";

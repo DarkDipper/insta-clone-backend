@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
-import userModel from "../Models/userModel";
+import userModel from "../models/userModel";
 import { Response } from "express";
 import { CustomRequest } from "../utils/interface";
 import { User } from "../utils/generateToken";
+import mongoose from "mongoose";
+
 async function updateUser(req: CustomRequest, res: Response) {
   const { _id, role } = req.user as User;
   if (_id.toString() === req.params.id || role === "admin") {
@@ -11,10 +13,12 @@ async function updateUser(req: CustomRequest, res: Response) {
         const salt = await bcrypt.genSalt(10);
         req.body.password = await bcrypt.hash(req.body.password, salt);
       } catch (e) {
-        res.status(500).send({
-          status: "failure",
-          message: e.message,
-        });
+        if (e instanceof Error) {
+          res.status(500).send({
+            status: "failure",
+            message: e.message,
+          });
+        }
       }
     }
     try {
@@ -66,12 +70,38 @@ async function getUser(req: CustomRequest, res: Response) {
       user: otherInfo,
     });
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 }
+
+const getUserByUsername = async (req: CustomRequest, res: Response) => {
+  try {
+    const username = req.params.username;
+    const user = await userModel.findOne({ user_name: username });
+    // console.log(user);
+    if (!user) {
+      throw new Error("user does not exist");
+    }
+    const { pass_word, jwtToken, __v, role, ...otherInfo } = user;
+    res.status(200).send({
+      status: true,
+      message: "user info",
+      user: otherInfo,
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: false,
+        message: e.message,
+      });
+    }
+  }
+};
 
 async function getFollowing(req: CustomRequest, res: Response) {
   try {
@@ -94,10 +124,12 @@ async function getFollowing(req: CustomRequest, res: Response) {
       followings: followings,
     });
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 }
 
@@ -124,10 +156,12 @@ async function getFollower(req: CustomRequest, res: Response) {
       },
     });
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 }
 
@@ -166,10 +200,12 @@ async function followUser(req: CustomRequest, res: Response) {
       throw new Error("you can't follow yourself");
     }
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 }
 
@@ -208,10 +244,12 @@ async function unFollowUser(req: CustomRequest, res: Response) {
       throw new Error("you can't unfollow yourself");
     }
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 }
 
@@ -237,13 +275,16 @@ async function searchUser(req: CustomRequest, res: Response) {
       users: users,
     });
   } catch (e) {
-    res.status(500).send({
-      status: "failure",
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
   }
 }
-export {
+
+export default {
   updateUser,
   getUser,
   getFollower,
@@ -251,4 +292,5 @@ export {
   followUser,
   unFollowUser,
   searchUser,
+  getUserByUsername,
 };

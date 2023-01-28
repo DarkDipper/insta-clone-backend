@@ -10,5 +10,6 @@ postRoute.post(
   postController.createPost
 );
 postRoute.get("/timeline", authController.verify, postController.getTimeline);
+postRoute.get("/u/:username", postController.getPostsUser);
 
 export default postRoute;
