@@ -21,6 +21,7 @@ const createPost = async (req: CustomRequest, res: Response) => {
       const { _id: imageID } = await newImage.save();
       listImage.push(imageID);
     }
+    // console.log(req.body.desc);
     const newPost = new postModel({
       user: userID,
       description: req.body.desc,
@@ -130,24 +131,23 @@ const getTimeline = async (req: CustomRequest, res: Response) => {
       const myPosts = await postModel
         .find({ user: userID })
         .skip(page * limit)
-        // .limit(3)
+        .limit(3)
         .sort({ createdAt: "desc" })
         .populate("user", "user_name profile_picture")
         .populate("list_image");
       const followingsPosts = await Promise.all(
         userFollowing.following.map((followingId) => {
-          return postModel
-            .find({
-              user: followingId,
-              createdAt: {
-                $gte: new Date(new Date().getTime() - 86400000).toISOString(),
-              },
-            })
-            .skip(page * 3)
-            .limit(3)
-            .sort({ createdAt: "desc" })
-            .populate("user", "user_name profile_picture")
-            .populate("list_image");
+          return (
+            postModel
+              .find({
+                user: followingId,
+              })
+              // .skip(page * 3)
+              // .limit(3)
+              .sort({ createdAt: "desc" })
+              .populate("user", "user_name profile_picture")
+              .populate("list_image")
+          );
         })
       );
       const arr = myPosts.concat(...followingsPosts);
@@ -169,10 +169,12 @@ const getTimeline = async (req: CustomRequest, res: Response) => {
 };
 const getPostsUser = async (req: CustomRequest, res: Response) => {
   try {
-    const user = await userModel.findOne({ username: req.params.username });
+    const user = await userModel.findOne({ user_name: req.params.username });
+    // console.log(req.params.username);
     if (user === null) {
       throw Error("User is null");
     } else {
+      // console.log(user.user_name);
       const posts = await postModel
         .find({ user: user._id })
         .sort({ createdAt: "desc" })

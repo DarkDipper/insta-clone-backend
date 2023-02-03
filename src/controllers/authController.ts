@@ -69,6 +69,9 @@ async function login(req: CustomRequest, res: Response) {
       status: "Success",
       message: "Login successfully",
       userToken: token,
+      _id: user._id,
+      user_name: user.user_name,
+      avatar: user.profile_picture,
     });
   } catch (e) {
     if (e instanceof Error) {
@@ -88,11 +91,27 @@ async function auth(req: CustomRequest, res: Response, next: NextFunction) {
     } else {
       const token = authHeader.split(" ")[1];
       if (authHeader) {
-        jwt.verify(token, process.env.SECRET_KEY_TOKEN, (err, user) => {
+        jwt.verify(token, process.env.SECRET_KEY_TOKEN, async (err, user) => {
           if (err) {
-            throw new Error("token is not valid!");
+            res.status(500).send({
+              status: false,
+              message: "token is not valid!",
+            });
+          } else {
+            const userInfo = await userModel.findOne({
+              _id: (user as JwtPayload)._id,
+            });
+            res.status(200).send({
+              status: true,
+              user: {
+                _id: userInfo?._id,
+                token: token,
+                userName: userInfo?.user_name,
+                avatar: userInfo?.profile_picture,
+              },
+            });
+            // res.status(200).send({ user: "All good" });
           }
-          res.status(200).send({ status: true, user: user });
         });
       }
     }

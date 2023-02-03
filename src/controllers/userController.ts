@@ -3,7 +3,6 @@ import userModel from "../models/userModel";
 import { Response } from "express";
 import { CustomRequest } from "../utils/interface";
 import { User } from "../utils/generateToken";
-import mongoose from "mongoose";
 
 async function updateUser(req: CustomRequest, res: Response) {
   const { _id, role } = req.user as User;
@@ -22,15 +21,22 @@ async function updateUser(req: CustomRequest, res: Response) {
       }
     }
     try {
+      const UpdateUser: { [k: string]: any } = {};
+      UpdateUser["user_name"] = req.body.user_name;
+      UpdateUser["email"] = req.body.email;
+      UpdateUser["gender"] = req.body.gender;
+      if (req.avatar) {
+        UpdateUser["profile_picture"] = req.avatar;
+      }
       const user = await userModel.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: req.body },
+        UpdateUser,
         { new: true }
       );
       if (user === null) {
         throw new Error();
       }
-      const { jwtToken, pass_word, ...other } = user;
+      // const { jwtToken, pass_word, ...other } = user;
       if (!user) {
         return res.status(400).send({
           status: "failure",
@@ -40,7 +46,12 @@ async function updateUser(req: CustomRequest, res: Response) {
       res.status(200).send({
         status: "success",
         message: "Account has been updated successfully",
-        user: other,
+        user: {
+          _id: user._id,
+          token: user.jwtToken,
+          avatar: user.profile_picture,
+          userName: user.user_name,
+        },
       });
     } catch (e) {
       res.status(500).send({
@@ -87,11 +98,19 @@ const getUserByUsername = async (req: CustomRequest, res: Response) => {
     if (!user) {
       throw new Error("user does not exist");
     }
-    const { pass_word, jwtToken, __v, role, ...otherInfo } = user;
     res.status(200).send({
       status: true,
       message: "user info",
-      user: otherInfo,
+      user: {
+        _id: user._id,
+        email: user.email,
+        user_name: user.user_name,
+        role: user.role,
+        profile_picture: user.profile_picture,
+        followers: user.followers,
+        following: user.following,
+        gender: user.gender,
+      },
     });
   } catch (e) {
     if (e instanceof Error) {
@@ -173,17 +192,17 @@ async function followUser(req: CustomRequest, res: Response) {
       throw new Error("Current User have problem");
     }
     if (currentUser.user_name !== req.params.username) {
-      const usertofollow = await userModel.findOne({
-        username: req.params.username,
+      const userToFollow = await userModel.findOne({
+        user_name: req.params.username,
       });
-      if (!usertofollow) {
+      if (!userToFollow) {
         throw new Error("user does not exist");
       }
-      if (!currentUser.following.includes(usertofollow._id)) {
+      if (!currentUser.following.includes(userToFollow._id)) {
         await currentUser.updateOne({
-          $push: { followings: usertofollow._id },
+          $push: { following: userToFollow._id },
         });
-        await usertofollow.updateOne({
+        await userToFollow.updateOne({
           $push: { followers: currentUser._id },
         });
         res.status(200).send({
@@ -217,17 +236,18 @@ async function unFollowUser(req: CustomRequest, res: Response) {
       throw new Error("Current User have problem");
     }
     if (currentUser.user_name !== req.params.username) {
-      const usertounfollow = await userModel.findOne({
+      const userToUnfollow = await userModel.findOne({
         username: req.params.username,
       });
-      if (!usertounfollow) {
+      if (!userToUnfollow) {
         throw new Error("user does not exist");
       }
-      if (currentUser.following.includes(usertounfollow._id)) {
+      // console.log(currentUser.following.includes(userToUnfollow._id));
+      if (currentUser.following.includes(userToUnfollow._id)) {
         await currentUser.updateOne({
-          $pull: { followings: usertounfollow._id },
+          $pull: { following: userToUnfollow._id },
         });
-        await usertounfollow.updateOne({
+        await userToUnfollow.updateOne({
           $pull: { followers: currentUser._id },
         });
         res.status(200).send({
@@ -236,7 +256,7 @@ async function unFollowUser(req: CustomRequest, res: Response) {
         });
       } else {
         res.status(400).send({
-          status: "success",
+          status: false,
           message: "you don't follow this user",
         });
       }

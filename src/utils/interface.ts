@@ -8,6 +8,7 @@ interface CustomRequest extends Request {
     height: number;
     blurHash: string;
   }[];
+  avatar?: string;
   query: {
     page?: string;
     limit?: string;

@@ -2,7 +2,7 @@ import { Response, NextFunction, Express } from "express";
 import axios from "axios";
 import { CustomRequest } from "./interface";
 import dotenv from "dotenv";
-import FormData = require("form-data");
+import FormData from "form-data";
 import { encode } from "blurhash";
 import sharp from "sharp";
 // import {m}
@@ -27,12 +27,6 @@ async function UploadImage(
       throw new Error("List image empty");
     }
     for (let i = 0; i < files.length; i++) {
-      let tempImg: {
-        srcURL: string;
-        width: number;
-        height: number;
-        blurHash: string;
-      };
       const { data } = await sharp(files[i].buffer)
         .ensureAlpha()
         .raw()
@@ -73,13 +67,53 @@ async function UploadImage(
     } else {
       res.status(500).send({
         status: "Failure",
-        message: "Error when upload image to imgbb",
+        message: "Error when upload image to imgur",
       });
     }
   }
 }
 
-export default { UploadImage };
+async function UploadAvatar(
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const fileBase64 = req.body.avatar as string;
+    // let avatarURL: {
+    //   srcURL: string;
+    //   width: number;
+    //   height: number;
+    // };
+    if (fileBase64 !== "") {
+      let bodyFormData = new FormData();
+      bodyFormData.append("image", fileBase64);
+      const imgur_res = await axios
+        .post(`https://api.imgur.com/3/upload/`, bodyFormData, {
+          headers: {
+            // Authorization: `Client-ID ${process.env.CLIENT_ID_IMGUR}`,
+            Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+          },
+        })
+        .catch((e) => {
+          throw Error("Can't upload image");
+        });
+      req.avatar = imgur_res.data.data.link;
+    }
+    next();
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(500).send({ status: "Failure", message: e.message });
+    } else {
+      res.status(500).send({
+        status: "Failure",
+        message: "Error when upload image to imgur",
+      });
+    }
+  }
+}
+
+export { UploadImage, UploadAvatar };
 /*
   EXAMPLE RESPONE FROM IMGBB
   {
