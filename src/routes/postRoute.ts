@@ -14,5 +14,5 @@ postRoute.post(
 );
 postRoute.get("/timeline", authController.verify, postController.getTimeline);
 postRoute.get("/u/:username", postController.getPostsUser);
-
+postRoute.get("/:id/like", authController.verify, postController.likeUnlike);
 export default postRoute;

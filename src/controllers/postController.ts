@@ -1,9 +1,9 @@
 import { Response } from "express";
 import { Types } from "mongoose";
-import postModel from "../Models/postModel";
+import postModel from "../models/postModel";
 import userModel from "../models/userModel";
 import imageModel from "../models/imageModel";
-import Comment from "../Models/commentModel";
+import Comment from "../models/commentModel";
 import { CustomRequest } from "../utils/interface";
 import { JwtPayload } from "jsonwebtoken";
 

@@ -10,11 +10,11 @@ async function registerVerify(userName: string, email: string) {
     if (awaitVerify[0]) {
       check = false;
       typeError = "Email";
-      errorMessage = "Email already been used";
+      errorMessage = "Email is already been used";
     } else if (awaitVerify[1]) {
       check = false;
       typeError = "UserName";
-      errorMessage = "User Name already been used";
+      errorMessage = "User name is already been used";
     }
     return { check: check, ErrorMessage: errorMessage };
   } catch (error) {

@@ -21,6 +21,12 @@ async function updateUser(req: CustomRequest, res: Response) {
       }
     }
     try {
+      const uniqueUser = await userModel.findOne({
+        user_name: req.body.user_name,
+      });
+      if (uniqueUser && _id.toString() !== req.params.id) {
+        throw new Error("The name is already exists");
+      }
       const UpdateUser: { [k: string]: any } = {};
       UpdateUser["user_name"] = req.body.user_name;
       UpdateUser["email"] = req.body.email;
@@ -54,10 +60,17 @@ async function updateUser(req: CustomRequest, res: Response) {
         },
       });
     } catch (e) {
-      res.status(500).send({
-        status: "failure",
-        message: "something is wrong !",
-      });
+      if (e instanceof Error) {
+        res.status(500).send({
+          status: "failure",
+          message: e.message,
+        });
+      } else {
+        res.status(500).send({
+          status: "failure",
+          message: "something is wrong !",
+        });
+      }
     }
   } else {
     return res.status(400).send({
@@ -237,7 +250,7 @@ async function unFollowUser(req: CustomRequest, res: Response) {
     }
     if (currentUser.user_name !== req.params.username) {
       const userToUnfollow = await userModel.findOne({
-        username: req.params.username,
+        user_name: req.params.username,
       });
       if (!userToUnfollow) {
         throw new Error("user does not exist");

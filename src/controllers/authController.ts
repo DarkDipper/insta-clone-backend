@@ -16,6 +16,7 @@ async function register(req: CustomRequest, res: Response) {
     if (!verify.check) {
       throw Error(verify.ErrorMessage);
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new userModel({
       user_name: username,
