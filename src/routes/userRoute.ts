@@ -19,6 +19,12 @@ userRoute.post("/register", authController.register);
 userRoute.post("/login", authController.login);
 userRoute.post("/auth", authController.auth);
 userRoute.get("/u/:username", userController.getUserByUsername);
+userRoute.get("/searchUser", userController.searchUsers);
+userRoute.get(
+  "/suggestUser",
+  authController.verify,
+  userController.suggestUser
+);
 userRoute.put(
   "/:id",
   authController.verify,

@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
+import { Types } from "mongoose";
 import userModel from "../models/userModel";
 import { Response } from "express";
 import { CustomRequest } from "../utils/interface";
 import { User } from "../utils/generateToken";
+import { JwtPayload } from "jsonwebtoken";
 
 async function updateUser(req: CustomRequest, res: Response) {
   const { _id, role } = req.user as User;
@@ -286,19 +288,15 @@ async function unFollowUser(req: CustomRequest, res: Response) {
   }
 }
 
-async function searchUser(req: CustomRequest, res: Response) {
+async function searchUsers(req: CustomRequest, res: Response) {
   try {
-    const { qlimit } = req.query;
-    if (typeof qlimit !== "string") {
-      throw new Error("Limit invalid");
-    }
-    const limit = parseInt(qlimit) || 5;
+    const limit = parseInt(req.query.limit || "") || 5;
     const search = req.query.search || "";
     const users = await userModel
       .find({
-        username: { $regex: search, $options: "i" },
+        user_name: { $regex: search, $options: "i" },
       })
-      .select("_id username profilePicture")
+      .select("_id user_name profile_picture")
       .limit(limit);
     const totalUsers = users.length;
     res.status(200).send({
@@ -306,6 +304,57 @@ async function searchUser(req: CustomRequest, res: Response) {
       totalUsers: totalUsers,
       limit: limit,
       users: users,
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
+  }
+}
+async function suggestUser(req: CustomRequest, res: Response) {
+  try {
+    const { _id, userName } = req.user as JwtPayload;
+    // const users = await userModel.findOne();
+    // console.log(_id);
+    const userSuggest = await userModel.aggregate([
+      {
+        $match: {
+          _id: { $ne: new Types.ObjectId(_id) },
+          followers: { $ne: new Types.ObjectId(_id) },
+        },
+      },
+      {
+        $sample: {
+          size: 5,
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          result: { $push: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: { $first: "$result" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          user_name: 1,
+          profile_picture: 1,
+        },
+      },
+    ]);
+
+    res.status(200).send({
+      status: "success",
+      userSuggest,
+      // users: users,
     });
   } catch (e) {
     if (e instanceof Error) {
@@ -324,6 +373,7 @@ export default {
   getFollowing,
   followUser,
   unFollowUser,
-  searchUser,
+  searchUsers,
   getUserByUsername,
+  suggestUser,
 };
