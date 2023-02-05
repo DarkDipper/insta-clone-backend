@@ -40,6 +40,11 @@ const UserSchema = new mongoose.Schema(
     jwtToken: {
       type: String,
     },
+    theme: {
+      type: String,
+      enum: ["dark", "light"],
+      default: "light",
+    },
   },
   {
     versionKey: false,

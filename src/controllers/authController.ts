@@ -109,6 +109,7 @@ async function auth(req: CustomRequest, res: Response, next: NextFunction) {
                 token: token,
                 userName: userInfo?.user_name,
                 avatar: userInfo?.profile_picture,
+                theme: userInfo?.theme,
               },
             });
             // res.status(200).send({ user: "All good" });
