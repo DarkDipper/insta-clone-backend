@@ -1,7 +1,7 @@
 import express from "express";
 import authController from "../controllers/authController";
 import postController from "../controllers/postController";
-import { UploadImage } from "../utils/upLoadImage";
+import { UploadImage } from "../utils/UpLoadImage";
 import multer from "multer";
 const upload = multer();
 const postRoute = express.Router();

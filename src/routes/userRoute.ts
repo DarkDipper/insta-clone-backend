@@ -1,7 +1,7 @@
 import express from "express";
 import authController from "../controllers/authController";
 import userController from "../controllers/userController";
-import { UploadAvatar } from "../utils/upLoadImage";
+import { UploadAvatar } from "../utils/UpLoadImage";
 /*
   Register
   Login
