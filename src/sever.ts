@@ -11,7 +11,7 @@ const limiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
-// app.use(express.static("public"));
+app.use(express.static("public"));
 app.use(limiter);
 app.use(cors());
 // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
@@ -25,6 +25,9 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 //     next();
 //   });
 // });
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
 app.get("/api/v1", (req: Request, res: Response) => {
   res.send("API on");
 });
