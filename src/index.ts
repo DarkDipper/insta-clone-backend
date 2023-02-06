@@ -5,12 +5,10 @@ import Logging from "./library/Logging";
 // load env variables
 dotenv.config();
 
-const port = process.env.PORT;
-
+const port = process.env.PORT || 3000;
 
 // connect to database before start server
-connectDB()
-  .then(() => {
+connectDB().then(() => {
   app.listen(port, () => {
     Logging.log(`[Server]: Server running on port http://localhost:${port}`);
   });
