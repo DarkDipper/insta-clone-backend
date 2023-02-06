@@ -36,7 +36,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/comment", commentRoute);
 
-app.use((req, res) => {
+app.use("*", (req, res) => {
   res.status(404).json({ error: `${req.method} Route ${req.path} not found` });
 });
 
