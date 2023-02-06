@@ -20,6 +20,11 @@ userRoute.post("/login", authController.login);
 userRoute.post("/auth", authController.auth);
 userRoute.get("/u/:username", userController.getUserByUsername);
 userRoute.get("/searchUser", userController.searchUsers);
+userRoute.post(
+  "/changeTheme",
+  authController.verify,
+  userController.changeTheme
+);
 userRoute.get(
   "/suggestUser",
   authController.verify,

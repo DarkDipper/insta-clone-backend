@@ -366,6 +366,31 @@ async function suggestUser(req: CustomRequest, res: Response) {
   }
 }
 
+async function changeTheme(req: CustomRequest, res: Response) {
+  try {
+    const { _id } = req.user as JwtPayload;
+    if (!req.body.theme) {
+      throw new Error("No theme to change");
+    }
+    await userModel.findOneAndUpdate(
+      {
+        _id: _id,
+      },
+      { $set: { theme: req.body.theme } }
+    );
+    res.status(200).send({
+      status: true,
+      message: "Change theme successfully",
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
+  }
+}
 export default {
   updateUser,
   getUser,
@@ -376,4 +401,5 @@ export default {
   searchUsers,
   getUserByUsername,
   suggestUser,
+  changeTheme,
 };
