@@ -4,7 +4,7 @@
   "description": "Backend for the instagram clone app",
   "main": "src/index.ts",
   "scripts": {
-    "build": "tsc && node dist/src/index.js",
+    "build": "tsc",
     "start": "node dist/src/index.js",
     "dev": "nodemon src/index.ts",
     "test": "ts-node src/test.ts"
