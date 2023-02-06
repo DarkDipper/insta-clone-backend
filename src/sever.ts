@@ -25,7 +25,7 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 //     next();
 //   });
 // });
-app.get("/api/v1/", (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("API on");
 });
 
