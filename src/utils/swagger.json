@@ -32,6 +32,11 @@
   ],
   "servers": [
     {
+      "description": "Product Server",
+      "url": "https://insta-clone-backend-dipper.onrender.com"
+    },
+    {
+      "description": "Development Server",
       "url": "http://localhost:5000"
     }
   ],
