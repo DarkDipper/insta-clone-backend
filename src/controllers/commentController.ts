@@ -4,6 +4,9 @@ import { Response } from "express";
 import { CustomRequest } from "../utils/interface";
 import { User } from "../utils/generateToken";
 async function addComment(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['Comment']
+  // #swagger.summary = 'Add Comment'
+  // #swagger.description = 'Endpoint for add comment'
   try {
     const { postId, ...comment } = req.body;
     comment.user = (req.user as User)._id;
@@ -30,6 +33,9 @@ async function addComment(req: CustomRequest, res: Response) {
 }
 
 async function getByPostId(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['Comment']
+  // #swagger.summary = 'Get Comment By Post Id'
+  // #swagger.description = 'Endpoint for get comment by post id'
   const PostId = req.params.PostId;
   try {
     const post = await postModel.findOne({ _id: PostId }).populate({
@@ -56,4 +62,49 @@ async function getByPostId(req: CustomRequest, res: Response) {
   }
 }
 
-export default { addComment, getByPostId };
+async function updateComment(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['Comment']
+  // #swagger.summary = 'Update Comment'
+  // #swagger.description = 'Endpoint for update comment'
+  try {
+    const comment = await commentModel.findOneAndUpdate(
+      { _id: req.params.id },
+      { content: req.body.content }
+    );
+    res.status(200).send({
+      status: "success",
+      message: "Comment has been updated",
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
+  }
+}
+
+async function deleteComment(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['Comment']
+  // #swagger.summary = 'Delete Comment'
+  // #swagger.description = 'Endpoint for delete comment'
+  try {
+    const comment = await commentModel.findOneAndDelete({
+      _id: req.params.id,
+    });
+    res.status(200).send({
+      status: "success",
+      message: "Comment has been deleted",
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(500).send({
+        status: "failure",
+        message: e.message,
+      });
+    }
+  }
+}
+
+export default { addComment, getByPostId, updateComment, deleteComment };

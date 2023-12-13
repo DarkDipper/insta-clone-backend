@@ -1,0 +1,667 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "Insta-clone API",
+    "description": "Insta-clone API Information",
+    "contact": {
+      "name": "Amazing Developer"
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Auth API"
+    },
+    {
+      "name": "User",
+      "description": "User API"
+    },
+    {
+      "name": "Post",
+      "description": "Post API"
+    },
+    {
+      "name": "Comment",
+      "description": "Comment API"
+    },
+    {
+      "name": "Setting",
+      "description": "Setting API"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    }
+  ],
+  "paths": {
+    "/api/v1/user/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register",
+        "description": "Endpoint for register user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "Theater9802"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Secretpassword"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "test@gmail.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "description": "Endpoint for login user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "Theater9802"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Secretpassword"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/u/{username}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get Info User based on username",
+        "description": "Endpoint for get infomation of user based on username",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/searchUser": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Search User",
+        "description": "Endpoint for search user",
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "limit how many user you want to get, default is 5",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/changeTheme": {
+      "post": {
+        "tags": ["Setting"],
+        "summary": "Change Theme",
+        "description": "Endpoint for change theme",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "theme": {
+                    "type": "string",
+                    "example": "dark"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/suggestUser": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Suggest User",
+        "description": "Endpoint for suggest user",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/{id}": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Update User",
+        "description": "Endpoint for update user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "example": "https://i.imgur.com/z2XblPL.png"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Secretpassword"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "test@gmail.com"
+                  },
+                  "user_name": {
+                    "type": "string",
+                    "example": "Theater9802"
+                  },
+                  "gender": {
+                    "type": "string",
+                    "example": "male"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/{username}/follow": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Follow User",
+        "description": "Endpoint for follow user",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/{username}/unfollow": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Unfollow User",
+        "description": "Endpoint for unfollow user",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/post/create": {
+      "post": {
+        "tags": ["Post"],
+        "summary": "Create Post",
+        "description": "Endpoint for create post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "desc": {
+                    "type": "string",
+                    "example": "Create Post",
+                    "description": "Description of the post"
+                  },
+                  "listImage": {
+                    "type": "array",
+                    "description": "List image of the post",
+                    "items": {
+                      "type": "file"
+                    },
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/post/{id}": {
+      "put": {
+        "tags": ["Post"],
+        "summary": "Update Post",
+        "description": "Endpoint for update post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "desc": {
+                    "type": "string",
+                    "example": "Updated Post",
+                    "description": "Description of the post"
+                  },
+                  "listImage": {
+                    "type": "array",
+                    "description": "List image of the post",
+                    "items": {
+                      "type": "file"
+                    },
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Post"],
+        "summary": "Get the Post",
+        "description": "Endpoint for get the post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Id of the post"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Post"],
+        "summary": "Delete Post",
+        "description": "Endpoint for delete post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Id of the post"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/post/timeline": {
+      "get": {
+        "tags": ["Post"],
+        "summary": "Get Timeline",
+        "description": "Endpoint for get timeline",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/post/u/{username}": {
+      "get": {
+        "tags": ["Post"],
+        "summary": "Get Posts of the user",
+        "description": "Endpoint for get posts of the user",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/post/{id}/like": {
+      "get": {
+        "tags": ["Post"],
+        "summary": "Like or Unlike the Post",
+        "description": "Endpoint for like or unlike the post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/comment/": {
+      "post": {
+        "tags": ["Comment"],
+        "summary": "Add Comment",
+        "description": "Endpoint for add comment",
+        "requestBody": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "postId": {
+                  "type": "string",
+                  "description": "Id of the post"
+                },
+                "comment": {
+                  "type": "string",
+                  "description": "Content of the comment"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/comment/{PostId}": {
+      "get": {
+        "tags": ["Comment"],
+        "summary": "Get Comment By Post Id",
+        "description": "Endpoint for get comment by post id",
+        "parameters": [
+          {
+            "name": "PostId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/comment/{id}": {
+      "delete": {
+        "tags": ["Comment"],
+        "summary": "Delete Comment",
+        "description": "Endpoint for delete comment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Comment"],
+        "summary": "Update Comment",
+        "description": "Endpoint for update comment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Authorization"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

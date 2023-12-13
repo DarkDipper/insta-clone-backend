@@ -7,6 +7,9 @@ import { User } from "../utils/generateToken";
 import { JwtPayload } from "jsonwebtoken";
 
 async function updateUser(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Update User'
+  // #swagger.description = 'Endpoint for update user'
   const { _id, role } = req.user as User;
   if (_id.toString() === req.params.id || role === "admin") {
     if (req.body.password) {
@@ -83,6 +86,9 @@ async function updateUser(req: CustomRequest, res: Response) {
 }
 
 async function getUser(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Get Info User'
+  // #swagger.description = 'Endpoint for get infomation of user'
   try {
     const id = req.params.id;
     const user = await userModel.findOne({ _id: id });
@@ -106,6 +112,9 @@ async function getUser(req: CustomRequest, res: Response) {
 }
 
 const getUserByUsername = async (req: CustomRequest, res: Response) => {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Get Info User based on username'
+  // #swagger.description = 'Endpoint for get infomation of user based on username'
   try {
     const username = req.params.username;
     const user = await userModel.findOne({ user_name: username });
@@ -138,6 +147,9 @@ const getUserByUsername = async (req: CustomRequest, res: Response) => {
 };
 
 async function getFollowing(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Get Following'
+  // #swagger.description = 'Endpoint for get following of the user'
   try {
     const username = req.params.username;
     const userfollowings = await userModel.findOne({ username: username });
@@ -168,6 +180,9 @@ async function getFollowing(req: CustomRequest, res: Response) {
 }
 
 async function getFollower(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Get Follower'
+  // #swagger.description = 'Endpoint for get follower of the user'
   try {
     const username = req.params.username;
     const userfollowers = await userModel.findOne({ username: username });
@@ -200,6 +215,9 @@ async function getFollower(req: CustomRequest, res: Response) {
 }
 
 async function followUser(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Follow User'
+  // #swagger.description = 'Endpoint for follow user'
   try {
     const { _id } = req.user as User;
     const currentUser = await userModel.findById({ _id: _id.toString() });
@@ -244,6 +262,9 @@ async function followUser(req: CustomRequest, res: Response) {
 }
 
 async function unFollowUser(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Unfollow User'
+  // #swagger.description = 'Endpoint for unfollow user'
   try {
     const { _id } = req.user as User;
     const currentUser = await userModel.findById({ _id: _id.toString() });
@@ -289,6 +310,9 @@ async function unFollowUser(req: CustomRequest, res: Response) {
 }
 
 async function searchUsers(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Search User'
+  // #swagger.description = 'Endpoint for search user'
   try {
     const limit = parseInt(req.query.limit || "") || 5;
     const search = req.query.search || "";
@@ -314,7 +338,11 @@ async function searchUsers(req: CustomRequest, res: Response) {
     }
   }
 }
+
 async function suggestUser(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['User']
+  // #swagger.summary = 'Suggest User'
+  // #swagger.description = 'Endpoint for suggest user'
   try {
     const { _id, userName } = req.user as JwtPayload;
     // const users = await userModel.findOne();
@@ -367,6 +395,9 @@ async function suggestUser(req: CustomRequest, res: Response) {
 }
 
 async function changeTheme(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['Setting']
+  // #swagger.summary = 'Change Theme'
+  // #swagger.description = 'Endpoint for change theme's
   try {
     const { _id } = req.user as JwtPayload;
     if (!req.body.theme) {

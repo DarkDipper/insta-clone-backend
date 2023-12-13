@@ -8,6 +8,9 @@ import { CustomRequest } from "../utils/interface";
 import { JwtPayload } from "jsonwebtoken";
 
 const createPost = async (req: CustomRequest, res: Response) => {
+  // #swagger.tags = ['Post']
+  // #swagger.summary = 'Create Post'
+  // #swagger.description = 'Endpoint for create post'
   if (req.user !== undefined && req.listDataImg) {
     const { _id: userID } = req.user as JwtPayload;
     const listImage: Types.ObjectId[] = [];
@@ -49,6 +52,9 @@ const createPost = async (req: CustomRequest, res: Response) => {
   }
 };
 const updatePost = async (req: CustomRequest, res: Response) => {
+  // #swagger.tags = ['Post']
+  // #swagger.summary = 'Update Post'
+  // #swagger.description = 'Endpoint for update post'
   try {
     if (req.user === undefined) {
       throw new Error("User is undefined");
@@ -81,6 +87,9 @@ const updatePost = async (req: CustomRequest, res: Response) => {
   }
 };
 const deletePost = async (req: CustomRequest, res: Response) => {
+  // #swagger.tags = ['Post']
+  // #swagger.summary = 'Delete Post'
+  // #swagger.description = 'Endpoint for delete post'
   try {
     if (req.user === undefined) {
       throw new Error("User is undefined");
@@ -114,7 +123,11 @@ const deletePost = async (req: CustomRequest, res: Response) => {
   }
 };
 const getTimeline = async (req: CustomRequest, res: Response) => {
+  // #swagger.tags = ['Post']
+  // #swagger.summary = 'Get Timeline'
+  // #swagger.description = 'Endpoint for get timeline'
   try {
+    // console.log(req.user);
     if (req.user === undefined) {
       throw new Error("User is undefined");
     }
@@ -168,6 +181,9 @@ const getTimeline = async (req: CustomRequest, res: Response) => {
   }
 };
 const getPostsUser = async (req: CustomRequest, res: Response) => {
+  // #swagger.tags = ['Post']
+  // #swagger.summary = 'Get Posts of the user'
+  // #swagger.description = 'Endpoint for get posts of the user'
   try {
     const user = await userModel.findOne({ user_name: req.params.username });
     // console.log(req.params.username);
@@ -194,6 +210,9 @@ const getPostsUser = async (req: CustomRequest, res: Response) => {
   }
 };
 const getPost = async (req: CustomRequest, res: Response) => {
+  // #swagger.tags = ['Post']
+  // #swagger.summary = 'Get the Post'
+  // #swagger.description = 'Endpoint for get the post'
   try {
     if (req.user === undefined) {
       throw new Error("User is undefined");
@@ -212,6 +231,9 @@ const getPost = async (req: CustomRequest, res: Response) => {
   }
 };
 const likeUnlike = async (req: CustomRequest, res: Response) => {
+  // #swagger.tags = ['Post']
+  // #swagger.summary = 'Like or Unlike the Post'
+  // #swagger.description = 'Endpoint for like or unlike the post'
   try {
     if (req.user === undefined) {
       throw new Error("User is undefined");
@@ -244,6 +266,7 @@ const likeUnlike = async (req: CustomRequest, res: Response) => {
     }
   }
 };
+
 export default {
   createPost,
   updatePost,

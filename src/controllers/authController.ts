@@ -6,10 +6,14 @@ import { registerVerify } from "../utils/verifyRegister";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { CustomRequest } from "../utils/interface";
+import Logging from "../library/Logging";
 dotenv.config();
 
 // Send back status
 async function register(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['Auth']
+  // #swagger.summary = 'Register'
+  // #swagger.description = 'Endpoint for register user'
   try {
     const { username, password, email } = req.body;
     const verify = await registerVerify(username, email);
@@ -43,6 +47,9 @@ async function register(req: CustomRequest, res: Response) {
 
 // Send back token
 async function login(req: CustomRequest, res: Response) {
+  // #swagger.tags = ['Auth']
+  // #swagger.summary = 'Login'
+  // #swagger.description = 'Endpoint for login user'
   try {
     const { username, password } = req.body;
     const user = await userModel.findOne({ user_name: username });
@@ -85,6 +92,7 @@ async function login(req: CustomRequest, res: Response) {
 
 // Auth cookie
 async function auth(req: CustomRequest, res: Response, next: NextFunction) {
+  // #swagger.ignore = true
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || authHeader === undefined) {
@@ -131,6 +139,7 @@ async function auth(req: CustomRequest, res: Response, next: NextFunction) {
 async function verify(req: CustomRequest, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers.authorization;
+    // Logging.log(req.headers.authorization);
     if (!authHeader || authHeader === undefined) {
       res.status(403).json("You are not authorized");
     } else {
@@ -140,6 +149,7 @@ async function verify(req: CustomRequest, res: Response, next: NextFunction) {
           if (err) {
             throw new Error("token is not valid!");
           }
+          // console.log(user);
           req.user = user;
           next();
         });
