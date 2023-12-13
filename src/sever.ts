@@ -14,7 +14,7 @@ import { SwaggerTheme } from "swagger-themes";
 const theme = new SwaggerTheme("v3");
 const swaggerOption = {
   customCss: theme.getBuffer(
-    `${process.env.ENV_STATE === "PRODUCT" ? "classic" : "classic"}`
+    `${process.env.ENV_STATE !== "PRODUCT" ? "dark" : "classic"}`
   ),
   customSiteTitle: "Insta-clone API",
 };
