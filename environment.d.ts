@@ -9,6 +9,7 @@ declare global {
       CLIENT_SECRET_IMGUR: string;
       REFRESH_TOKEN: string;
       ACCESS_TOKEN: string;
+      ENV_STATE: string;
     }
   }
 }
